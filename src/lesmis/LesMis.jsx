@@ -3,8 +3,17 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import "./styles.css";
 
-import { mouseover, mouseout, order } from "./utils";
+import { order, capitalize_Words } from "./utils";
 import miserables from "./miserables.json";
+
+// 1: greil's mercenaries
+// 2: crimea
+// 3: gallia
+// 4: daein
+// 5: goldoa
+// 6: bird trbes
+// 7: begnion
+// 8: merchants
 
 function LesMis() {
   const ref = useRef();
@@ -45,8 +54,10 @@ function LesMis() {
     miserables.links.forEach(function (link) {
       matrix[link.source][link.target].z += link.value;
       matrix[link.target][link.source].z += link.value;
-      matrix[link.source][link.source].z += link.value;
-      matrix[link.target][link.target].z += link.value;
+      // matrix[link.source][link.source].z += 1;
+      // matrix[link.target][link.target].z += 1;
+      // matrix[link.source][link.source].z += link.value;
+      // matrix[link.target][link.target].z += link.value;
       nodes[link.source].count += link.value;
       nodes[link.target].count += link.value;
     });
@@ -60,16 +71,18 @@ function LesMis() {
         return nodes[b].count - nodes[a].count;
       }),
       group: d3.range(n).sort(function (a, b) {
-        return nodes[b].group - nodes[a].group;
+        return nodes[a].group - nodes[b].group;
       }),
     };
 
     const x = d3.scaleBand().range([0, width]);
-    const z = d3.scaleLinear().domain([0, 4]).clamp(true);
-    const c = d3.scaleOrdinal(d3.schemeCategory10);
+    const z = d3.scaleLinear().domain([0, 20]).range([0.3, 1.0]).clamp(true);
+    // const z = d3.scaleLinear().domain([0, 4]).clamp(true);
+    const c = d3.scaleOrdinal(d3.schemeTableau10);
+    // const c = d3.scaleOrdinal(d3.schemeCategory10);
 
     // The default sort order.
-    x.domain(orders.name);
+    x.domain(orders.group);
 
     // CONSTRUCTING THE GRAPH
     svg
@@ -124,6 +137,36 @@ function LesMis() {
         return nodes[i].name;
       });
 
+    var tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
+    const mouseover = (p) => {
+      const pX = p.srcElement.getAttribute("idX");
+      const pY = p.srcElement.getAttribute("idY");
+      const pZ = p.srcElement.getAttribute("idZ");
+      d3.selectAll(".row text").classed("active", function (d, i) {
+        return i == pY;
+      });
+      d3.selectAll(".column text").classed("active", function (d, i) {
+        return i == pX;
+      });
+      tooltip.transition().duration(200).style("opacity", 0.9);
+      tooltip
+        .html(
+          nodes[pY].name + " and " + nodes[pX].name + "</br>" + pZ + " chapters"
+        )
+        .style("left", p.pageX + 30 + "px")
+        .style("top", p.pageY - 50 + "px");
+    };
+
+    const mouseout = () => {
+      d3.selectAll("text").classed("active", false);
+      tooltip.transition().duration(500).style("opacity", 0);
+    };
+
     row
       .selectAll(".cell")
       .data((d) => d.filter((item) => item.z))
@@ -135,14 +178,20 @@ function LesMis() {
       .attr("height", x.bandwidth())
       .attr("idX", (d) => d.x)
       .attr("idY", (d) => d.y)
+      .attr("idZ", (d) => d.z)
       .style("fill-opacity", function (d) {
         return z(d.z);
       })
       .style("fill", function (d) {
         return nodes[d.x].group == nodes[d.y].group
-          ? c(nodes[d.x].group)
-          : null;
+          ? miserables.colormap[nodes[d.x].group].color
+          : "#363636";
       })
+      // .style("fill", function (d) {
+      //   return nodes[d.x].group == nodes[d.y].group
+      //     ? c(nodes[d.x].group)
+      //     : "#363636";
+      // })
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
 
@@ -151,17 +200,36 @@ function LesMis() {
     });
   }, []);
 
+  const createLegend = () => {
+    return (
+      <div className="legend">
+        <b>Legend</b>
+        {Object.keys(miserables.colormap).map(function (key) {
+          const item = miserables.colormap[key];
+          return (
+            <div key={key} className="row">
+              <div className="label" style={{ backgroundColor: item.color }} />
+              <p>{item.name}</p>
+            </div>
+          );
+          // console.log(key, miserables.colormap[key]);
+        })}
+      </div>
+    );
+
+    // return (
+    //   <>
+    //     {miserables.colormap.foreach((item) => {
+    //       <p>{item.name}</p>;
+    //     })}
+    //   </>
+    // );
+  };
+
   return (
     <div className="ocks-org">
-      <header>
-        <aside>April 10, 2012</aside>
-        <a href="../" rel="author">
-          Mike Bostock
-        </a>
-      </header>
-
       <h1>
-        <i>Les Misérables</i> Co-occurrence
+        <i>Fire Emblem</i> Co-occurrence
       </h1>
 
       <aside style={{ marginTop: "80px" }}>
@@ -173,7 +241,7 @@ function LesMis() {
             <option value="group">by Cluster</option>
           </select>
         </p>
-        <p>
+        {/* <p>
           This matrix diagram visualizes character co-occurrences in Victor
           Hugo’s{" "}
           <i>
@@ -181,8 +249,8 @@ function LesMis() {
               Les Misérables
             </a>
           </i>
-        </p>
-        .
+        </p>. */}
+
         <p>
           Each colored cell represents two characters that appeared in the same
           chapter; darker cells indicate characters that co-occurred more
@@ -194,9 +262,16 @@ function LesMis() {
         <p>
           Built with <a href="https://d3js.org/">d3.js</a>.
         </p>
+        {createLegend()}
       </aside>
 
-      <svg width={800} height={800} id="barchart" ref={ref} />
+      <svg
+        style={{ marginLeft: "30px" }}
+        width={800}
+        height={800}
+        id="barchart"
+        ref={ref}
+      />
 
       {/* <p className="attribution">
         Source:{" "}

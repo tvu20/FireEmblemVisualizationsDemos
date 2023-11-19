@@ -18,6 +18,34 @@ html {
   min-width: 1040px;
 }
 
+.tooltip {
+  position: absolute;
+  text-align: center;
+  /* width: 400px; */
+  border-radius: 5px;
+  padding: 2px 15px;
+  background: white;
+  border: 0px;
+  pointer-events: none;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  transition: 0.1s;
+  font-family: "PT Sans", sans-serif;
+  font-size: 14px;
+}
+
+.legend p {
+  margin: 4px;
+}
+
+.legend .row {
+  display: flex;
+}
+
+.legend .label {
+  width: 5px;
+  opacity: 0.8;
+}
+
 .ocks-org {
   width: 100%;
   height: 100%;
@@ -56,6 +84,7 @@ h1 {
   font-weight: 300;
   letter-spacing: -2px;
   margin: 0.3em 0 0.1em 0;
+  text-align: center;
 }
 
 h2 {
