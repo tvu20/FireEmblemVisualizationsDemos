@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 
 export const mouseover = (p) => {
+  console.log("mouseover", p);
   d3.selectAll(".row text").classed("active", function (d, i) {
     return i == p.y;
   });
@@ -11,33 +12,6 @@ export const mouseover = (p) => {
 
 export const mouseout = () => {
   d3.selectAll("text").classed("active", false);
-};
-
-export const rowHandler = (row, nodes, x, z, c) => {
-  var cell = d3
-    .select(this)
-    .selectAll(".cell")
-    .data(
-      row.filter(function (d) {
-        return d.z;
-      })
-    )
-    .enter()
-    .append("rect")
-    .attr("class", "cell")
-    .attr("x", function (d) {
-      return x(d.x);
-    })
-    .attr("width", x.bandwidth())
-    .attr("height", x.bandwidth())
-    .style("fill-opacity", function (d) {
-      return z(d.z);
-    })
-    .style("fill", function (d) {
-      return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null;
-    })
-    .on("mouseover", mouseover)
-    .on("mouseout", mouseout);
 };
 
 export const order = (value, x, svg, orders) => {

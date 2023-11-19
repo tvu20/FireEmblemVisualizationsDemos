@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import "./styles.css";
 
-import { mouseover, mouseout, rowHandler, order } from "./utils";
+import { order } from "./utils";
 import miserables from "./miserables.json";
 
 function LesMis() {
@@ -14,10 +14,6 @@ function LesMis() {
     var margin = { top: 80, right: 0, bottom: 10, left: 80 },
       width = 720,
       height = 720;
-
-    // var x = d3.scaleBand().range([0, width]),
-    //   z = d3.scaleLinear().domain([0, 4]).clamp(true),
-    //   c = d3.scaleOrdinal(d3.schemeCategory10);
 
     // append svg to body of page
     var svg = d3
@@ -68,14 +64,12 @@ function LesMis() {
       }),
     };
 
-    console.log(orders);
-
-    var x = d3.scaleBand().range([0, width]).domain(orders.name);
+    var x = d3.scaleBand().range([0, width]);
     var z = d3.scaleLinear().domain([0, 4]).clamp(true);
     var c = d3.scaleOrdinal(d3.schemeCategory10);
 
     // The default sort order.
-    // x.domain(orders.name);
+    x.domain(orders.name);
 
     // CONSTRUCTING THE GRAPH
     svg
@@ -107,24 +101,6 @@ function LesMis() {
         return nodes[i].name;
       });
 
-    var cell = row
-      .selectAll(".cell")
-      .data((d) => d.filter((item) => item.z))
-      .enter()
-      .append("rect")
-      .attr("class", "cell")
-      .attr("x", (d) => x(d.x))
-      .attr("width", x.bandwidth())
-      .attr("height", x.bandwidth())
-      .style("fill-opacity", function (d) {
-        return z(d.z);
-      })
-      .style("fill", function (d) {
-        return nodes[d.x].group == nodes[d.y].group
-          ? c(nodes[d.x].group)
-          : null;
-      });
-
     // COLUMN
     var column = svg
       .selectAll(".column")
@@ -148,53 +124,33 @@ function LesMis() {
         return nodes[i].name;
       });
 
-    // var cell = d3
-    //   .select(ref.current)
-    //   .selectAll(".cell")
-    //   .data(
-    //     row.filter(function (d) {
-    //       return d.z;
-    //     })
-    //   )
-    //   .enter()
-    //   .append("rect")
-    //   .attr("class", "cell")
-    //   .attr("x", function (d) {
-    //     return x(d.x);
-    //   })
-    //   .attr("width", x.bandwidth())
-    //   .attr("height", x.bandwidth())
-    //   .style("fill-opacity", function (d) {
-    //     return z(d.z);
-    //   })
-    //   .style("fill", function (d) {
-    //     return nodes[d.x].group == nodes[d.y].group
-    //       ? c(nodes[d.x].group)
-    //       : null;
-    //   })
-    //   .on("mouseover", mouseover)
-    //   .on("mouseout", mouseout);
+    var cell = row
+      .selectAll(".cell")
+      .data((d) => d.filter((item) => item.z))
+      .enter()
+      .append("rect")
+      .attr("class", "cell")
+      .attr("x", (d) => x(d.x))
+      .attr("width", x.bandwidth())
+      .attr("height", x.bandwidth())
+      .style("fill-opacity", function (d) {
+        return z(d.z);
+      })
+      .style("fill", function (d) {
+        return nodes[d.x].group == nodes[d.y].group
+          ? c(nodes[d.x].group)
+          : null;
+      });
 
-    // var timeout = setTimeout(function () {
-    //   order("group", x, svg, orders);
-    //   d3.select("#order").property("selectedIndex", 2).node().focus();
-    // }, 5000);
+    var timeout = setTimeout(function () {
+      order("group", x, svg, orders);
+      d3.select("#order").property("selectedIndex", 2).node().focus();
+    }, 5000);
 
-    // d3.select("#order").on("change", function () {
-    //   clearTimeout(timeout);
-    //   order(this.value);
-    // });
-
-    // var row = svg
-    //   .selectAll(".row")
-    //   .data(matrix)
-    //   .enter()
-    //   .append("g")
-    //   .attr("class", "row")
-    //   .attr("transform", function (d, i) {
-    //     return "translate(0," + x(i) + ")";
-    //   })
-    //   .each(row);
+    d3.select("#order").on("change", function () {
+      clearTimeout(timeout);
+      order(this.value, x, svg, orders);
+    });
   }, []);
 
   return (
@@ -210,7 +166,7 @@ function LesMis() {
         <i>Les Misérables</i> Co-occurrence
       </h1>
 
-      {/* <aside style={{ marginTop: "80px" }}>
+      <aside style={{ marginTop: "80px" }}>
         <p>
           Order:{" "}
           <select id="order">
@@ -240,7 +196,7 @@ function LesMis() {
         <p>
           Built with <a href="https://d3js.org/">d3.js</a>.
         </p>
-      </aside> */}
+      </aside>
 
       <svg width={800} height={800} id="barchart" ref={ref} />
 
