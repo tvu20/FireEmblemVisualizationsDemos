@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import "./styles.css";
 
-import { mouseover, order } from "./utils";
+import { mouseover, mouseout, order } from "./utils";
 import miserables from "./miserables.json";
 
 function LesMis() {
@@ -11,12 +11,12 @@ function LesMis() {
 
   useEffect(() => {
     // set dimensions/margins of graph
-    var margin = { top: 80, right: 0, bottom: 10, left: 80 },
+    const margin = { top: 80, right: 0, bottom: 10, left: 80 },
       width = 720,
       height = 720;
 
     // append svg to body of page
-    var svg = d3
+    const svg = d3
       .select(ref.current)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
@@ -28,7 +28,7 @@ function LesMis() {
     // THIS IS WHERE THE d3.JSON SECTION STARTS
     // console.log("miserables", miserables);
 
-    var matrix = [],
+    const matrix = [],
       nodes = miserables.nodes,
       n = nodes.length;
 
@@ -52,7 +52,7 @@ function LesMis() {
     });
 
     // Precompute the orders.
-    var orders = {
+    const orders = {
       name: d3.range(n).sort(function (a, b) {
         return d3.ascending(nodes[a].name, nodes[b].name);
       }),
@@ -64,9 +64,9 @@ function LesMis() {
       }),
     };
 
-    var x = d3.scaleBand().range([0, width]);
-    var z = d3.scaleLinear().domain([0, 4]).clamp(true);
-    var c = d3.scaleOrdinal(d3.schemeCategory10);
+    const x = d3.scaleBand().range([0, width]);
+    const z = d3.scaleLinear().domain([0, 4]).clamp(true);
+    const c = d3.scaleOrdinal(d3.schemeCategory10);
 
     // The default sort order.
     x.domain(orders.name);
@@ -102,7 +102,7 @@ function LesMis() {
       });
 
     // COLUMN
-    var column = svg
+    const column = svg
       .selectAll(".column")
       .data(matrix)
       .enter()
@@ -124,23 +124,7 @@ function LesMis() {
         return nodes[i].name;
       });
 
-    const mouseover = (p) => {
-      // console.log(p.srcElement);
-      const pX = p.srcElement.getAttribute("idX");
-      const pY = p.srcElement.getAttribute("idY");
-      d3.selectAll(".row text").classed("active", function (d, i) {
-        return i == pY;
-      });
-      d3.selectAll(".column text").classed("active", function (d, i) {
-        return i == pX;
-      });
-    };
-
-    const mouseout = () => {
-      d3.selectAll("text").classed("active", false);
-    };
-
-    var cell = row
+    row
       .selectAll(".cell")
       .data((d) => d.filter((item) => item.z))
       .enter()
@@ -162,13 +146,7 @@ function LesMis() {
       .on("mouseover", mouseover)
       .on("mouseout", mouseout);
 
-    // var timeout = setTimeout(function () {
-    //   order("group", x, svg, orders);
-    //   d3.select("#order").property("selectedIndex", 2).node().focus();
-    // }, 5000);
-
     d3.select("#order").on("change", function () {
-      // clearTimeout(timeout);
       order(this.value, x, svg, orders);
     });
   }, []);
