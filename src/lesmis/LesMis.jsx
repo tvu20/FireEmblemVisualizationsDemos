@@ -152,7 +152,7 @@ function LesMis() {
   }, []);
 
   return (
-    <>
+    <div className="ocks-org">
       <header>
         <aside>April 10, 2012</aside>
         <a href="../" rel="author">
@@ -262,7 +262,7 @@ function LesMis() {
           Mike Bostock
         </a>
       </footer> */}
-    </>
+    </div>
   );
 }
 
