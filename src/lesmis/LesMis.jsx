@@ -107,6 +107,24 @@ function LesMis() {
         return nodes[i].name;
       });
 
+    var cell = row
+      .selectAll(".cell")
+      .data((d) => d.filter((item) => item.z))
+      .enter()
+      .append("rect")
+      .attr("class", "cell")
+      .attr("x", (d) => x(d.x))
+      .attr("width", x.bandwidth())
+      .attr("height", x.bandwidth())
+      .style("fill-opacity", function (d) {
+        return z(d.z);
+      })
+      .style("fill", function (d) {
+        return nodes[d.x].group == nodes[d.y].group
+          ? c(nodes[d.x].group)
+          : null;
+      });
+
     // COLUMN
     var column = svg
       .selectAll(".column")
@@ -128,30 +146,6 @@ function LesMis() {
       .attr("text-anchor", "start")
       .text(function (d, i) {
         return nodes[i].name;
-      });
-
-    var cell = row
-      .selectAll(".cell")
-      .data(
-        row.filter(function (d) {
-          return d.z;
-        })
-      )
-      .enter()
-      .append("rect")
-      .attr("class", "cell")
-      .attr("x", function (d) {
-        return x(d.x);
-      })
-      .attr("width", x.bandwidth())
-      .attr("height", x.bandwidth())
-      .style("fill-opacity", function (d) {
-        return z(d.z);
-      })
-      .style("fill", function (d) {
-        return nodes[d.x].group == nodes[d.y].group
-          ? c(nodes[d.x].group)
-          : null;
       });
 
     // var cell = d3
