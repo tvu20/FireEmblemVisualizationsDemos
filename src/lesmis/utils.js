@@ -2,12 +2,17 @@ import * as d3 from "d3";
 
 export const mouseover = (p) => {
   console.log("mouseover", p);
-  d3.selectAll(".row text").classed("active", function (d, i) {
-    return i == p.y;
-  });
-  d3.selectAll(".column text").classed("active", function (d, i) {
-    return i == p.x;
-  });
+
+  //   console.log(d3.selectAll(".row"));
+
+  //   d3.selectAll(".row").classed("active", (d) => console.log(d));
+
+  //   d3.selectAll(".row text").classed("active", function (d, i) {
+  //     return i == p.y;
+  //   });
+  //   d3.selectAll(".column text").classed("active", function (d, i) {
+  //     return i == p.x;
+  //   });
 };
 
 export const mouseout = () => {

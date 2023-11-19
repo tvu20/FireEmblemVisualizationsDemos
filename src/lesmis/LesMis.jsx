@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import "./styles.css";
 
-import { order } from "./utils";
+import { mouseover, order } from "./utils";
 import miserables from "./miserables.json";
 
 function LesMis() {
@@ -124,6 +124,22 @@ function LesMis() {
         return nodes[i].name;
       });
 
+    const mouseover = (p) => {
+      // console.log(p.srcElement);
+      const pX = p.srcElement.getAttribute("idX");
+      const pY = p.srcElement.getAttribute("idY");
+      d3.selectAll(".row text").classed("active", function (d, i) {
+        return i == pY;
+      });
+      d3.selectAll(".column text").classed("active", function (d, i) {
+        return i == pX;
+      });
+    };
+
+    const mouseout = () => {
+      d3.selectAll("text").classed("active", false);
+    };
+
     var cell = row
       .selectAll(".cell")
       .data((d) => d.filter((item) => item.z))
@@ -133,6 +149,8 @@ function LesMis() {
       .attr("x", (d) => x(d.x))
       .attr("width", x.bandwidth())
       .attr("height", x.bandwidth())
+      .attr("idX", (d) => d.x)
+      .attr("idY", (d) => d.y)
       .style("fill-opacity", function (d) {
         return z(d.z);
       })
@@ -140,15 +158,17 @@ function LesMis() {
         return nodes[d.x].group == nodes[d.y].group
           ? c(nodes[d.x].group)
           : null;
-      });
+      })
+      .on("mouseover", mouseover)
+      .on("mouseout", mouseout);
 
-    var timeout = setTimeout(function () {
-      order("group", x, svg, orders);
-      d3.select("#order").property("selectedIndex", 2).node().focus();
-    }, 5000);
+    // var timeout = setTimeout(function () {
+    //   order("group", x, svg, orders);
+    //   d3.select("#order").property("selectedIndex", 2).node().focus();
+    // }, 5000);
 
     d3.select("#order").on("change", function () {
-      clearTimeout(timeout);
+      // clearTimeout(timeout);
       order(this.value, x, svg, orders);
     });
   }, []);
