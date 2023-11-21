@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import "./styles.css";
 
-import { order, capitalize_Words } from "./utils";
+import { order } from "./utils";
 import miserables from "./miserables.json";
 
 // 1: greil's mercenaries
@@ -78,11 +78,11 @@ function LesMis() {
     const x = d3.scaleBand().range([0, width]);
     const z = d3.scaleLinear().domain([0, 20]).range([0.3, 1.0]).clamp(true);
     // const z = d3.scaleLinear().domain([0, 4]).clamp(true);
-    const c = d3.scaleOrdinal(d3.schemeTableau10);
+    // const c = d3.scaleOrdinal(d3.schemeTableau10);
     // const c = d3.scaleOrdinal(d3.schemeCategory10);
 
     // The default sort order.
-    x.domain(orders.group);
+    x.domain(orders.name);
 
     // CONSTRUCTING THE GRAPH
     svg
@@ -158,8 +158,8 @@ function LesMis() {
         .html(
           nodes[pY].name + " and " + nodes[pX].name + "</br>" + pZ + " chapters"
         )
-        .style("left", p.pageX + 30 + "px")
-        .style("top", p.pageY - 50 + "px");
+        .style("left", p.pageX + 10 + "px")
+        .style("top", p.pageY - 40 + "px");
     };
 
     const mouseout = () => {
