@@ -2,7 +2,7 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 // import Tester from "./components/Tester";
-import LesMis from "./lesmis/LesMis";
+// import LesMis from "./lesmis/LesMis";
 import "./App.css";
 
 function App() {
@@ -10,7 +10,8 @@ function App() {
 
   return (
     <>
-      <LesMis />
+      <h1>Demos for feviz project!</h1>
+      {/* <LesMis /> */}
       {/* <Tester /> */}
       {/* <div>
         <a href="https://vitejs.dev" target="_blank">

@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 function NavBar() {
   const { pathname } = useLocation();
 
-  const pages = [""];
+  const pages = ["", "les-mis", "social-graphs"];
 
   const createLinks = () => {
     return pages.map((p) => (
@@ -18,6 +18,7 @@ function NavBar() {
         onClick={() => {
           window.scroll(0, 0);
         }}
+        style={{ marginRight: "30px" }}
       >
         {p === ""
           ? "Dashboard"
